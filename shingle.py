@@ -46,7 +46,7 @@ def shingle():
 
         print("Shingling doc " + str(cnt+1))
         docIDlist.add(cnt+1)
-        shingle_list=build_kmers(i,4)
+        shingle_list=build_kmers(i,7)
 
         # docAsShingleSets[cnt]=shingle_list
         templist=[]
@@ -414,7 +414,7 @@ print("Calculating Cosine similarities....\n")
 
 found = 0
 for sim, doc in sim_docs1:
-    if sim < threshold:
+    if sim >= threshold:
         found = 1
         print('Document Name: ' + str(doc), 'Similarity: ' + str(sim) + '\n')
 if found == 0:
