@@ -3,6 +3,7 @@ import os
 import json
 import pandas as pd
 import binascii as bin
+import numpy as np
 data_list=[]
 
 
@@ -53,10 +54,10 @@ def shingle():
                 l+=1
 
             # Creating the Posting list for each shingle
-            if shingle_word not in PostingDict:
-                PostingDict[shingle_word] = set()  
+            if hashed_shingle not in PostingDict:
+                PostingDict[hashed_shingle] = set()  
 
-            PostingDict[shingle_word].add(cnt)
+            PostingDict[hashed_shingle].add(cnt)
 
         docAsShingleSets[cnt]=templist
         cnt+=1
@@ -109,12 +110,36 @@ def invertedIndexMatrixGenerator(docsAsShingleSets, allShingles):
     #     json.dump(invertedIndexTable, ft)
     
 '''
+def matrixGenerator(allShingles, invertedIndexTable):
+    '''
+    #Parameters: allShingles (list of all shingles in the corpus)
+    #            invertedIndexTable (dictionary with posting list for each shingle)
+    #This function indexes the shingles and returns a boolean matrix of shingle versus document
+    '''
+    postlist=[]
+    index_matrix = {}
+    index = 0
+    # indexing the shingles
+    print("Generating Boolean Matrix\n")
+    for shingle in allShingles:
+        index_matrix[shingle] = index
+        index += 1
 
+    # shingle document matrix
+    matrix = np.zeros([len(allShingles), 1680], dtype=int)
+    for shingle in allShingles:
+        postlist = invertedIndexTable[shingle]
+        for d in postlist:
+            matrix[index_matrix[shingle]][int(d)] = 1  # Boolean value true for that document corresponding to a shingle
+
+    return matrix
 #call the required functions
 
 #parsing_data()
 docsAsShingleSets, allShingles, PostingDict = shingle()
-print(PostingDict)
+#print(PostingDict)
+matrix = matrixGenerator(allShingles,PostingDict)
+print(matrix)
 #with open("./inverted_table.json",'w') as ft: 
 #    json.dump(PostingDict, ft)
 print("Dumped successfully")
