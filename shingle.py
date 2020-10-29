@@ -35,10 +35,11 @@ def shingle():
     sequences = parsing_data()
     cnt=0
     shinglesInDocWords = set()
+    PostingDict = {}
     for i in sequences:
 
-        #print("Shingling doc " + str(cnt+1))
-        shingle_list=build_kmers(i,3)
+        print("Shingling doc " + str(cnt+1))
+        shingle_list=build_kmers(i,4)
 
         # docAsShingleSets[cnt]=shingle_list
         templist=[]
@@ -50,6 +51,13 @@ def shingle():
             if hashed_shingle not in templist:
                 templist.append(hashed_shingle)
                 l+=1
+
+            # Creating the Posting list for each shingle
+            if shingle_word not in PostingDict:
+                PostingDict[shingle_word] = []  
+
+            PostingDict[shingle_word].append(i)
+
         docAsShingleSets[cnt]=templist
         cnt+=1
     #print(cnt)
@@ -62,19 +70,21 @@ def shingle():
         count+=1
     #print(count)
     # print(shinglesInDocWords)
-    with open("./shingle_list.json",'w') as ft:
-        json.dump(list_of_unique_shingles, ft)
-    with open("./docwise_shingle_list.json",'w') as f:
-        json.dump(docAsShingleSets, f)
+    #with open("./shingle_list.json",'w') as ft:
+    #    json.dump(list_of_unique_shingles, ft)
+    #with open("./docwise_shingle_list.json",'w') as f:
+    #    json.dump(docAsShingleSets, f)
 
+    return docAsShingleSets, list_of_unique_shingles, PostingDict
 
-def invertedIndexMatrixGenerator():
-    '''
+'''
+def invertedIndexMatrixGenerator(docsAsShingleSets, allShingles):
+    
     #Paramters: docsAsShingleSets (The dictionary of documents with shingles)
     #           allShingles (all shingles generated till now from the corpus)
     #This function generates the posting list for each shingle in allShingles
     #It returns a dictionary of posting list for each shingle
-    '''
+    
     with open("./docwise_shingle_list.json") as data:
         docsAsShingleSets = json.load(data)
     with open("./shingle_list.json") as data:
@@ -82,23 +92,29 @@ def invertedIndexMatrixGenerator():
     print("Generating Inverted Index\n")
     invertedIndexTable = {}
     #allShingles = list(set(allShingles))
+    cnt1 = 0
     for eachShingle in allShingles:
-        postingsList = {}
+        postingsList = []
+        cnt1 += 1
+        print(cnt1)
         for j in docsAsShingleSets:
             if (eachShingle in docsAsShingleSets[j]): # If shingle in present in jth document,j is added to the list
-                try:
-                    postingsList.append(j)
-                except:
-                    postingsList = {j}
+                #try:
+                postingsList.append(j)
+                #except:
+                    #postingsList = {j}
         invertedIndexTable[eachShingle] = postingsList # Inverted index table for each shingle is made
     print(invertedIndexTable)
     # with open("./inverted_table.json",'w') as ft:
     #     json.dump(invertedIndexTable, ft)
     
+'''
 
 #call the required functions
 
 #parsing_data()
-shingle()
-invertedIndexMatrixGenerator()
+docsAsShingleSets, allShingles, PostingDict = shingle()
+
+print(PostingDict)
+#invertedIndexMatrixGenerator()
 
