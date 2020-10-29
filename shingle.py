@@ -2,6 +2,7 @@
 import os
 import json
 import pandas as pd
+import binascii as bin
 data_list=[]
 
 
@@ -41,10 +42,11 @@ def shingle():
         templist=[]
         l=0
         for shingle_word in shingle_list:
-            if shingle_word not in shinglesInDocWords:
-                shinglesInDocWords.add(shingle_word)
-            if shingle_word not in templist:
-                templist.append(shingle_word)
+            hashed_shingle = bin.crc32(shingle_word.encode('ASCII')) & 0xffffffff
+            if hashed_shingle not in shinglesInDocWords:
+                shinglesInDocWords.add(hashed_shingle)
+            if hashed_shingle not in templist:
+                templist.append(hashed_shingle)
                 l+=1
         docAsShingleSets[cnt]=templist
         cnt+=1
