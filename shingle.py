@@ -36,8 +36,10 @@ def shingle():
     cnt=0
     shinglesInDocWords = set()
     for i in sequences:
-        print("Shingling doc " + str(cnt+1))
+
+        #print("Shingling doc " + str(cnt+1))
         shingle_list=build_kmers(i,3)
+
         # docAsShingleSets[cnt]=shingle_list
         templist=[]
         l=0
@@ -50,15 +52,15 @@ def shingle():
                 l+=1
         docAsShingleSets[cnt]=templist
         cnt+=1
-    print(cnt)
+    #print(cnt)
 
-    print(shinglesInDocWords)
+    #print(shinglesInDocWords)
     list_of_unique_shingles=[]
     count=0
     for i in shinglesInDocWords:
         list_of_unique_shingles.insert(count,i)
         count+=1
-    print(count)
+    #print(count)
     # print(shinglesInDocWords)
     with open("./shingle_list.json",'w') as ft:
         json.dump(list_of_unique_shingles, ft)
