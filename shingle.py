@@ -4,13 +4,13 @@ import json
 import pandas as pd
 data_list=[]
 
+
+docAsShingleSets={}
 #parsing_data() returns the list of documents list from the dataset
 def parsing_data() :
 
     data = pd.read_csv("./dna_data/chimp_data-noN.txt", sep = "	")
 
-    #read data as .csv 
-    data = pd.read_csv("./dna_data/human_data.txt", sep = "	")
     #each sequence stored as a list from the corpus data
     doc_list = data["sequence"].tolist()
     return doc_list
@@ -36,10 +36,17 @@ def shingle():
     shinglesInDocWords = set()
     for i in sequences:
         print("Shingling doc " + str(cnt+1))
-        shingle_list=build_kmers(i,1)
+        shingle_list=build_kmers(i,2)
+        # docAsShingleSets[cnt]=shingle_list
+        templist=[]
+        l=0
         for shingle_word in shingle_list:
             if shingle_word not in shinglesInDocWords:
                 shinglesInDocWords.add(shingle_word)
+            if shingle_word not in templist:
+                templist.append(shingle_word)
+                l+=1
+        docAsShingleSets[cnt]=templist
         cnt+=1
     print(cnt)
 
@@ -53,6 +60,8 @@ def shingle():
     # print(shinglesInDocWords)
     with open("./shingle_list.json",'w') as ft:
         json.dump(list_of_unique_shingles, ft)
+    with open("./docwise_shingle_list.json",'w') as f:
+        json.dump(docAsShingleSets, f)
 
 
 
