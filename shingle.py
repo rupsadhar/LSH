@@ -18,8 +18,7 @@ def parsing_data() :
     doc_list = data["sequence"].tolist()
 # print(doc_list)
 
-    with open("./dna_data/human_data.json",'w') as ft:
-        json.dump(doc_list, ft)
+    return doc_list
 
 def build_kmers(sequence, ksize):
     kmers = []
@@ -33,8 +32,7 @@ def build_kmers(sequence, ksize):
 
 shingles={}
 def shingle():
-    with open("./dna_data/human_data.json") as data:
-        sequences = json.load(data)
+    sequences = parsing_data()
     cnt=0
     shinglesInDocWords = set()
     for i in sequences:
@@ -52,6 +50,13 @@ def shingle():
     # print(shinglesInDocWords)
     with open("./shingle_list.json",'w') as ft:
         json.dump(list_of_unique_shingles, ft)
+
+    #     print("Shingling doc " + str(cnt+1))
+    #     shingles[cnt]=build_kmers(i,10)
+    #     cnt+=1
+    # with open("./shingles.json",'w') as ft:
+    #     json.dump(shingles, ft)
+
 
 parsing_data()
 shingle()
