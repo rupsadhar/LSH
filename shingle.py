@@ -54,9 +54,9 @@ def shingle():
 
             # Creating the Posting list for each shingle
             if shingle_word not in PostingDict:
-                PostingDict[shingle_word] = []  
+                PostingDict[shingle_word] = set()  
 
-            PostingDict[shingle_word].append(i)
+            PostingDict[shingle_word].add(cnt)
 
         docAsShingleSets[cnt]=templist
         cnt+=1
@@ -114,7 +114,9 @@ def invertedIndexMatrixGenerator(docsAsShingleSets, allShingles):
 
 #parsing_data()
 docsAsShingleSets, allShingles, PostingDict = shingle()
-
 print(PostingDict)
+#with open("./inverted_table.json",'w') as ft: 
+#    json.dump(PostingDict, ft)
+print("Dumped successfully")
 #invertedIndexMatrixGenerator()
 
