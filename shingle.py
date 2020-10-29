@@ -51,5 +51,5 @@ def shingle():
         json.dump(list_of_unique_shingles, ft)
 
 #call the required functions
-parsing_data()
+#parsing_data()
 shingle()
