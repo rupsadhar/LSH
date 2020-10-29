@@ -4,9 +4,11 @@ import json
 import pandas as pd
 import binascii as bin
 import numpy as np
+import sympy as sympy
+import random as random
 data_list=[]
-
-
+INF = 2**32
+NUM_HASH_FUNCS=150
 docAsShingleSets={}
 #parsing_data() returns the list of documents list from the dataset
 def parsing_data() :
@@ -40,7 +42,7 @@ def shingle():
     for i in sequences:
 
         print("Shingling doc " + str(cnt+1))
-        shingle_list=build_kmers(i,4)
+        shingle_list=build_kmers(i,7)
 
         # docAsShingleSets[cnt]=shingle_list
         templist=[]
@@ -133,6 +135,77 @@ def matrixGenerator(allShingles, invertedIndexTable):
             matrix[index_matrix[shingle]][int(d)] = 1  # Boolean value true for that document corresponding to a shingle
 
     return matrix
+
+def pickRandomCoeffs(k, maxval):
+    '''
+    #Parameters: k (Number of random values)
+    #            maxval (maximum value for randint)
+    # This function returns k number of unique random values
+    '''
+
+
+  # Create a list of 'k' random values.
+    randList = []
+
+    while k > 0:
+    # Get a random shingle ID.
+        randIndex = random.randint(0, maxval)
+
+    # Ensure that each random number is unique.
+        while randIndex in randList:
+            randIndex = random.randint(0, maxval)
+
+    # Add the random number to the list.
+        randList.append(randIndex)
+        k = k - 1
+
+    return randList
+
+def find_sign_matrix(matrix, numOfShingles):
+    '''
+    #Parameters: matrix (boolean matrix of shingles vs docs)
+    #            numOfShingles (total number of shingles in corpus)
+    #This function picks two random coefficient values and genrates a hashfunction of form h(x)=(ax+b)%c
+    #All values are initialised to infinities and each row is mapped to lowest hash function that has a
+    #boolean true for that shingle. This new matrix called sigmatrix is returned.
+    # example
+    # matrix= [[1, 0, 0, 1],
+    #         [0, 0, 1, 0],
+    #         [0, 1, 0, 1],
+    #         [1, 0, 1, 1],
+    #         [0, 0, 1, 0]]
+    # coeffA = [1,1]
+    # coeffB = [1,3]
+    # c = 5
+    # required output is [[1, 3, 0, 1], [0, 2, 0, 0]]
+    '''
+    print("Generating signature Matrix\n")
+    c = numOfShingles
+    while not sympy.isprime(c):
+        c += 1
+
+    coeffA = pickRandomCoeffs(NUM_HASH_FUNCS, numOfShingles-1)
+    coeffB = pickRandomCoeffs(NUM_HASH_FUNCS, numOfShingles-1)
+
+    rows, cols, sigrows = len(matrix), len(matrix[0]), len(coeffA)
+    # initialize signature matrix with maxint
+    sigmatrix = np.full((sigrows, cols), INF)
+    
+
+    for r in range(rows):
+        hashvalue = []
+        for h in range(sigrows):
+            hashvalue.append((coeffA[h] + coeffB[h]*r) % c)# Hash each row
+        # if data != 0 and signature > hash value, replace signature with hash value
+        for col in range(cols):
+            if matrix[r][col] == 0:
+                continue
+            for i in range(sigrows):
+                if sigmatrix[i, col] > hashvalue[i]:
+                    sigmatrix[i, col] = hashvalue[i]
+    print("Signature matrix\n")
+    print(sigmatrix)
+    return sigmatrix
 #call the required functions
 
 #parsing_data()
@@ -140,6 +213,7 @@ docsAsShingleSets, allShingles, PostingDict = shingle()
 #print(PostingDict)
 matrix = matrixGenerator(allShingles,PostingDict)
 print(matrix)
+sign_matrix = find_sign_matrix(matrix,len(allShingles))
 #with open("./inverted_table.json",'w') as ft: 
 #    json.dump(PostingDict, ft)
 print("Dumped successfully")
