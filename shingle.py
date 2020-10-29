@@ -4,7 +4,7 @@ import json
 import pandas as pd
 data_list=[]
 def parsing_data() :
-    data = pd.read_csv("./dna_data/human_data.txt", sep = "	")
+    data = pd.read_csv("./dna_data/chimp_data-noN.txt", sep = "	")
 
     doc_list = data["sequence"].tolist()
     return doc_list
@@ -39,10 +39,11 @@ def shingle():
     for i in shinglesInDocWords:
         list_of_unique_shingles.insert(count,i)
         count+=1
+    print(count)
     # print(shinglesInDocWords)
     with open("./shingle_list.json",'w') as ft:
         json.dump(list_of_unique_shingles, ft)
 
 
-parsing_data()
+#parsing_data()
 shingle()
