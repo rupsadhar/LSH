@@ -36,11 +36,22 @@ def shingle():
     with open("./dna_data/human_data.json") as data:
         sequences = json.load(data)
     cnt=0
+    shinglesInDocWords = set()
     for i in sequences:
-        shingles[cnt]=build_kmers(i,10)
-        cnt+=1
-    with open("./shingles.json",'w') as ft:
-        json.dump(shingles, ft)
+        shingle_list=build_kmers(i,1)
+        for shingle_word in shingle_list:
+            if shingle_word not in shinglesInDocWords:
+                shinglesInDocWords.add(shingle_word)
+                cnt+=1
+    print(cnt)
+    list_of_unique_shingles=[]
+    count=0
+    for i in shinglesInDocWords:
+        list_of_unique_shingles.insert(count,i)
+        count+=1
+    # print(shinglesInDocWords)
+    with open("./shingle_list.json",'w') as ft:
+        json.dump(list_of_unique_shingles, ft)
 
 parsing_data()
 shingle()
