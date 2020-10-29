@@ -58,5 +58,7 @@ def shingle():
 
 
 #call the required functions
+
+#parsing_data()
 shingle()
 
