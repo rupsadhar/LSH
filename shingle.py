@@ -11,6 +11,7 @@ data_list=[]
 INF = 2**32
 NUM_HASH_FUNCS=100
 threshold = 0.6
+B_ROWS = 5
 docAsShingleSets={}
 #parsing_data() returns the list of documents list from the dataset
 def parsing_data() :
@@ -257,6 +258,127 @@ def lsh(B_BANDS, docIdList, sig):
             docth[j][i] = h
     # print(docth)
     return docth, buckets
+def jacsim(doc1, doc2, docsAsShingleSets,sign_matrix):
+    '''
+    Jackard similarity
+    '''
+    doc1 = sign_matrix[:,doc1]
+    doc2 = sign_matrix[:,doc2]
+    intersection = sum(bool(x) for x in np.logical_and(doc1, doc2))
+    return (intersection / len(doc1))
+
+
+def euclidean_distance(x, y, r=2.0):
+    '''
+    Euclidean distance
+    '''
+    A = np.linalg.norm(x)
+    B = np.linalg.norm(y)
+    x = np.divide(x, A)
+    y = np.divide(y, B)
+    try:
+         return np.power(np.sum(np.power(np.subtract(x, y), r)), 1.0/r)
+    except (ValueError,ZeroDivisionError):
+         print('Please, enter only even values for "r > 0".')
+    except IndexError:
+         print('Please, the sets must have the same size.')
+
+def cosine_distance(x,y):
+    '''
+    Cosine Distance
+    '''
+    prodAB = np.dot(x,y)
+    #zeros = np.zeros(len(x))
+    A = np.linalg.norm(x)
+    B = np.linalg.norm(y)
+    return prodAB / (A*B)
+
+
+def get_similarcos(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
+    '''
+    Similarity for cosine distance
+    '''
+    if dn not in docIdList:
+        raise KeyError('No document with the given name found in the corpus.')
+
+    docid = dn
+    # Collection of documents similar to docid
+    c = []
+    # taking union of all buckets in which docid is present
+    for b, h in enumerate(docth[docid]):
+        c.extend(buckets[b][h])
+    c = set(c)
+    print(c)
+
+    # Similar documents
+    sim_list = []
+    for doc in c:
+        if doc == docid:
+            continue
+        sim = cosine_distance(sign_matrix[:,dn],
+                              sign_matrix[:,doc])
+        sim_list.append((sim, doc))
+    sim_list.sort()
+    return sim_list
+
+def get_similar(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
+    '''
+    #Parameters: dn (The query document number)
+    #            docIdList (List of doc ids)
+    #            buckets (List of buckets)
+    #            docth (doc to hash list)
+    #            docAsShingleSets
+    #            Signature Matrix   
+    # This function finds similar documents given a query document after hashing and bucketing the query document
+    # It also evaluates based on various similarity criterion, namely, Jacard similarity, Euclidean distance
+    # and cosine similarity
+    # It returns a list of similar documents based on decreasing similarity amount
+    '''
+    if dn not in docIdList:
+        raise KeyError('No document with the given name found in the corpus.')
+
+    docid = dn
+    # Collection of documents similar to docid
+    c = []
+    # taking union of all buckets in which docid is present
+    for b, h in enumerate(docth[docid]):
+        c.extend(buckets[b][h])
+    c = set(c)
+    print(c)
+
+    # Similar documents
+    sim_list = []
+    for doc in c:
+        if doc == docid:
+            continue
+        sim = jacsim(docid, doc, docsAsShingleSets,sign_matrix)
+        sim_list.append((sim, doc))
+    sim_list.sort(reverse=True)
+    return sim_list
+
+def get_similareucdis(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
+    '''Similarity For Euclidean Distance'''
+    if dn not in docIdList:
+        raise KeyError('No document with the given name found in the corpus.')
+
+    docid = dn
+    # Collection of documents similar to docid
+    c = []
+    # taking union of all buckets in which docid is present
+    for b, h in enumerate(docth[docid]):
+        c.extend(buckets[b][h])
+    c = set(c)
+    print(c)
+
+    # Similar documents
+    sim_list = []
+    for doc in c:
+        if doc == docid:
+            continue
+        sim = euclidean_distance(sign_matrix[:,dn],sign_matrix[:,doc])
+        sim_list.append((sim, doc))
+    sim_list.sort()
+    return sim_list
 #call the required functions
 
 #parsing_data()
@@ -267,6 +389,52 @@ print(matrix)
 sign_matrix = find_sign_matrix(matrix,len(allShingles))
 BANDS=20
 docth,buckets = lsh(BANDS,docIDlist,sign_matrix)
+
+print(docIDlist)
+inputDocID = input("enter the doc ID you want to know similarities of : ")
+
+
+
+#Using Jaccard Similarity
+sim_docs = get_similar(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
+
+print("Calculating Jaccard similarities....\n")
+
+found = 0
+for sim, doc in sim_docs:
+    if sim >= threshold:
+        found = 1
+        print('Document Name: ' + str(doc), 'Similarity: ' + str(sim) + '\n')
+if found == 0:
+    print("NO similar docs for the given threshold")
+    
+sim_docs1 = get_similarcos(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
+
+print("Calculating Cosine similarities....\n")
+
+found = 0
+for sim, doc in sim_docs1:
+    if sim < threshold:
+        found = 1
+        print('Document Name: ' + str(doc), 'Similarity: ' + str(sim) + '\n')
+if found == 0:
+    print("NO similar docs for the given threshold")
+
+sim_docs2 = get_similareucdis(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
+    
+print("Calculating Euclidean Distance....\n")
+
+found = 0
+t = np.sqrt(2 - 2*threshold)
+for sim, doc in sim_docs2:
+    if sim < t:
+        found = 1
+        print('Document Name: ' + str(doc), 'Similarity: ' + str(sim) + '\n')
+if found == 0:
+    print("NO similar docs for the given threshold")   
+
+
+       
 #with open("./inverted_table.json",'w') as ft: 
 #    json.dump(PostingDict, ft)
 print("Dumped successfully")
