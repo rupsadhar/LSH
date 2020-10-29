@@ -3,12 +3,19 @@ import os
 import json
 import pandas as pd
 data_list=[]
+
+#parsing_data() returns the list of documents list from the dataset
 def parsing_data() :
+
     data = pd.read_csv("./dna_data/chimp_data-noN.txt", sep = "	")
 
+    #read data as .csv 
+    data = pd.read_csv("./dna_data/human_data.txt", sep = "	")
+    #each sequence stored as a list from the corpus data
     doc_list = data["sequence"].tolist()
     return doc_list
 
+#build_kmers returns the list of shingles of size 'ksize' from each document with id pasrsed to the parameter 'sequence'
 def build_kmers(sequence, ksize):
     kmers = []
     n_kmers = len(sequence) - ksize + 1
@@ -19,7 +26,10 @@ def build_kmers(sequence, ksize):
 
     return kmers
 
+#set of unique shingles obtained from each document in the corpus
 shingles={}
+
+# shingle returns the set of shingles stored and dumped in a json file 'shingle_list.json'
 def shingle():
     sequences = parsing_data()
     cnt=0
@@ -45,5 +55,8 @@ def shingle():
         json.dump(list_of_unique_shingles, ft)
 
 
-#parsing_data()
+
+
+#call the required functions
 shingle()
+
