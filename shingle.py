@@ -6,9 +6,11 @@ import binascii as bin
 import numpy as np
 import sympy as sympy
 import random as random
+import math
 data_list=[]
 INF = 2**32
-NUM_HASH_FUNCS=150
+NUM_HASH_FUNCS=100
+threshold = 0.6
 docAsShingleSets={}
 #parsing_data() returns the list of documents list from the dataset
 def parsing_data() :
@@ -32,7 +34,7 @@ def build_kmers(sequence, ksize):
 
 #set of unique shingles obtained from each document in the corpus
 shingles={}
-
+docIDlist=set()
 # shingle returns the set of shingles stored and dumped in a json file 'shingle_list.json'
 def shingle():
     sequences = parsing_data()
@@ -42,7 +44,8 @@ def shingle():
     for i in sequences:
 
         print("Shingling doc " + str(cnt+1))
-        shingle_list=build_kmers(i,7)
+        docIDlist.add(cnt+1)
+        shingle_list=build_kmers(i,4)
 
         # docAsShingleSets[cnt]=shingle_list
         templist=[]
@@ -78,7 +81,7 @@ def shingle():
     #with open("./docwise_shingle_list.json",'w') as f:
     #    json.dump(docAsShingleSets, f)
 
-    return docAsShingleSets, list_of_unique_shingles, PostingDict
+    return docAsShingleSets, list_of_unique_shingles, PostingDict, docIDlist
 
 '''
 def invertedIndexMatrixGenerator(docsAsShingleSets, allShingles):
@@ -128,12 +131,14 @@ def matrixGenerator(allShingles, invertedIndexTable):
         index += 1
 
     # shingle document matrix
+    check=0
     matrix = np.zeros([len(allShingles), 1680], dtype=int)
     for shingle in allShingles:
         postlist = invertedIndexTable[shingle]
         for d in postlist:
             matrix[index_matrix[shingle]][int(d)] = 1  # Boolean value true for that document corresponding to a shingle
-
+            check+=1
+    print(check)
     return matrix
 
 def pickRandomCoeffs(k, maxval):
@@ -206,14 +211,62 @@ def find_sign_matrix(matrix, numOfShingles):
     print("Signature matrix\n")
     print(sigmatrix)
     return sigmatrix
+def getbestb(threshold,NUM_HASH_FUNCS, eps=1e0):
+    '''
+    #Parameters: threshold (difined threshold)
+    #            NUM_HASH_FUNCS (number of hash functions)
+    #            eps
+    # Returns the best value for b by solving an equation
+    '''
+    for b in range(1, NUM_HASH_FUNCS+1):
+        opt = b*math.log10(b)
+        val = -1 * NUM_HASH_FUNCS * math.log10(threshold)
+        if opt > val-eps and opt < val+eps:
+            print("Using number of bands : %d" % (np.round(b)))
+            return np.round(b)
+def lsh(B_BANDS, docIdList, sig):
+    '''
+    #Parameters: B_BANDS (Number of bands in signature matrix)
+    #            docIdList (List of document ids)
+    #            sig (signature matrix)
+    #This function first divides the signature matrix into bands and hashes each column onto buckets.
+    #This hashing is called Locality Sensitive Hashing.
+    #This function returns the list of document to its hash along with the buckets
+    '''
+    n = NUM_HASH_FUNCS
+    b = getbestb(threshold,NUM_HASH_FUNCS)
+    r = n / b
+
+    d = 1680
+    # Array of dictionaries, each dictionary is for each band which will hold buckets for hashed vectors in that band
+    buckets = np.full(b, {})
+    # Mapping from docid to h to find the buckets in which document with docid was hashed
+    docth = np.zeros((d, b), dtype=int)  # doc to hash
+    for i in range(b):
+        for j in range(d):
+            low = int(i*r) # First row in a band
+            high = min(int((i+1)*r), n)# Last row in current band
+            l = []
+            for x in range(low, high):
+                l.append(sig[x, j])  # Append each row into l
+            h = int(hash(tuple(l))) % (d+1)
+            try:
+                buckets[i][h].append(j) # If a bucket corresponds to this hash value append this document into it
+            except:
+                buckets[i][h] = {j}
+            docth[j][i] = h
+    # print(docth)
+    return docth, buckets
 #call the required functions
 
 #parsing_data()
-docsAsShingleSets, allShingles, PostingDict = shingle()
+docsAsShingleSets, allShingles, PostingDict, docIDlist = shingle()
 #print(PostingDict)
 matrix = matrixGenerator(allShingles,PostingDict)
 print(matrix)
 sign_matrix = find_sign_matrix(matrix,len(allShingles))
+BANDS=20
+docth,buckets = lsh(BANDS,docIDlist,sign_matrix)
 #with open("./inverted_table.json",'w') as ft: 
 #    json.dump(PostingDict, ft)
 print("Dumped successfully")
