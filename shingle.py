@@ -14,12 +14,13 @@ threshold = 0.6
 B_ROWS = 5
 docAsShingleSets={}
 #parsing_data() returns the list of documents list from the dataset
-def parsing_data() :
+def parsing_data(inputQuery) :
 
     data = pd.read_csv("./dna_data/chimp_data-noN.txt", sep = "	")
 
     #each sequence stored as a list from the corpus data
     doc_list = data["sequence"].tolist()
+    doc_list.append(inputQuery)
     return doc_list
 
 #build_kmers returns the list of shingles of size 'ksize' from each document with id pasrsed to the parameter 'sequence'
@@ -37,8 +38,8 @@ def build_kmers(sequence, ksize):
 shingles={}
 docIDlist=set()
 # shingle returns the set of shingles stored and dumped in a json file 'shingle_list.json'
-def shingle():
-    sequences = parsing_data()
+def shingle(inputQuery):
+    sequences = parsing_data(inputQuery)
     cnt=0
     shinglesInDocWords = set()
     PostingDict = {}
@@ -133,7 +134,7 @@ def matrixGenerator(allShingles, invertedIndexTable):
 
     # shingle document matrix
     check=0
-    matrix = np.zeros([len(allShingles), 1680], dtype=int)
+    matrix = np.zeros([len(allShingles), 1681], dtype=int)
     for shingle in allShingles:
         postlist = invertedIndexTable[shingle]
         for d in postlist:
@@ -238,7 +239,7 @@ def lsh(B_BANDS, docIdList, sig):
     b = getbestb(threshold,NUM_HASH_FUNCS)
     r = n / b
 
-    d = 1680
+    d = 1681
     # Array of dictionaries, each dictionary is for each band which will hold buckets for hashed vectors in that band
     buckets = np.full(b, {})
     # Mapping from docid to h to find the buckets in which document with docid was hashed
@@ -382,7 +383,9 @@ def get_similareucdis(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
 #call the required functions
 
 #parsing_data()
-docsAsShingleSets, allShingles, PostingDict, docIDlist = shingle()
+inputQuery = input("Enter query string:")
+
+docsAsShingleSets, allShingles, PostingDict, docIDlist = shingle(inputQuery)
 #print(PostingDict)
 matrix = matrixGenerator(allShingles,PostingDict)
 print(matrix)
@@ -391,9 +394,10 @@ BANDS=20
 docth,buckets = lsh(BANDS,docIDlist,sign_matrix)
 
 print(docIDlist)
-inputDocID = input("enter the doc ID you want to know similarities of : ")
+# inputDocID = input("enter the doc ID you want to know similarities of : ")
+# inputQuery = input("Enter query string:")
 
-
+inputDocID="1681"
 
 #Using Jaccard Similarity
 sim_docs = get_similar(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
