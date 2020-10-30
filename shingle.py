@@ -47,7 +47,7 @@ def shingle(inputQuery):
 
         print("Shingling doc " + str(cnt+1))
         docIDlist.add(cnt+1)
-        shingle_list=build_kmers(i,7)
+        shingle_list=build_kmers(i,5)
 
         # docAsShingleSets[cnt]=shingle_list
         templist=[]
@@ -397,7 +397,7 @@ print(docIDlist)
 # inputDocID = input("enter the doc ID you want to know similarities of : ")
 # inputQuery = input("Enter query string:")
 
-inputDocID="1681"
+inputDocID="1680"
 
 #Using Jaccard Similarity
 sim_docs = get_similar(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
