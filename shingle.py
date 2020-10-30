@@ -14,7 +14,7 @@ threshold = 0.6
 B_ROWS = 5
 docAsShingleSets={}
 #parsing_data() returns the list of documents list from the dataset
-def parsing_data(inputQuery) :
+def parsing_data(inputQuery):
 
     data = pd.read_csv("./dna_data/chimp_data-noN.txt", sep = "	")
 
@@ -43,9 +43,10 @@ def shingle(inputQuery):
     cnt=0
     shinglesInDocWords = set()
     PostingDict = {}
+    print("Shingling the documents ")
     for i in sequences:
 
-        print("Shingling doc " + str(cnt+1))
+       
         docIDlist.add(cnt+1)
         shingle_list=build_kmers(i,5)
 
@@ -70,53 +71,16 @@ def shingle(inputQuery):
         cnt+=1
     #print(cnt)
 
-    #print(shinglesInDocWords)
     list_of_unique_shingles=[]
     count=0
     for i in shinglesInDocWords:
         list_of_unique_shingles.insert(count,i)
         count+=1
-    #print(count)
-    # print(shinglesInDocWords)
-    #with open("./shingle_list.json",'w') as ft:
-    #    json.dump(list_of_unique_shingles, ft)
-    #with open("./docwise_shingle_list.json",'w') as f:
-    #    json.dump(docAsShingleSets, f)
+
 
     return docAsShingleSets, list_of_unique_shingles, PostingDict, docIDlist
 
-'''
-def invertedIndexMatrixGenerator(docsAsShingleSets, allShingles):
-    
-    #Paramters: docsAsShingleSets (The dictionary of documents with shingles)
-    #           allShingles (all shingles generated till now from the corpus)
-    #This function generates the posting list for each shingle in allShingles
-    #It returns a dictionary of posting list for each shingle
-    
-    with open("./docwise_shingle_list.json") as data:
-        docsAsShingleSets = json.load(data)
-    with open("./shingle_list.json") as data:
-        allShingles = json.load(data)
-    print("Generating Inverted Index\n")
-    invertedIndexTable = {}
-    #allShingles = list(set(allShingles))
-    cnt1 = 0
-    for eachShingle in allShingles:
-        postingsList = []
-        cnt1 += 1
-        print(cnt1)
-        for j in docsAsShingleSets:
-            if (eachShingle in docsAsShingleSets[j]): # If shingle in present in jth document,j is added to the list
-                #try:
-                postingsList.append(j)
-                #except:
-                    #postingsList = {j}
-        invertedIndexTable[eachShingle] = postingsList # Inverted index table for each shingle is made
-    print(invertedIndexTable)
-    # with open("./inverted_table.json",'w') as ft:
-    #     json.dump(invertedIndexTable, ft)
-    
-'''
+
 def matrixGenerator(allShingles, invertedIndexTable):
     '''
     #Parameters: allShingles (list of all shingles in the corpus)
@@ -261,7 +225,7 @@ def lsh(B_BANDS, docIdList, sig):
     return docth, buckets
 def jacsim(doc1, doc2, docsAsShingleSets,sign_matrix):
     '''
-    Jackard similarity
+    Jaccard similarity
     '''
     doc1 = sign_matrix[:,doc1]
     doc2 = sign_matrix[:,doc2]
@@ -437,10 +401,4 @@ for sim, doc in sim_docs2:
 if found == 0:
     print("NO similar docs for the given threshold")   
 
-
-       
-#with open("./inverted_table.json",'w') as ft: 
-#    json.dump(PostingDict, ft)
-print("Dumped successfully")
-#invertedIndexMatrixGenerator()
 
