@@ -1,6 +1,4 @@
-
 import os
-import json
 import pandas as pd
 import binascii as bin
 import numpy as np
@@ -104,7 +102,6 @@ def matrixGenerator(allShingles, invertedIndexTable):
         for d in postlist:
             matrix[index_matrix[shingle]][int(d)] = 1  # Boolean value true for that document corresponding to a shingle
             check+=1
-    print(check)
     return matrix
 
 def pickRandomCoeffs(k, maxval):
@@ -232,7 +229,43 @@ def jacsim(doc1, doc2, docsAsShingleSets,sign_matrix):
     intersection = sum(bool(x) for x in np.logical_and(doc1, doc2))
     return (intersection / len(doc1))
 
+def get_similar(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
+    '''
+    #Parameters: dn (The query document number)
+    #            docIdList (List of doc ids)
+    #            buckets (List of buckets)
+    #            docth (doc to hash list)
+    #            docAsShingleSets
+    #            Signature Matrix   
+    # This function finds similar documents given a query document after hashing and bucketing the query document
+    # It also evaluates based on various similarity criterion, namely, Jacard similarity, Euclidean distance
+    # and cosine similarity
+    # It returns a list of similar documents based on decreasing similarity amount
+    '''
+    if dn not in docIdList:
+        raise KeyError('No document with the given name found in the corpus.')
 
+    docid = dn
+    # Collection of documents similar to docid
+    c = []
+    # taking union of all buckets in which docid is present
+    for b, h in enumerate(docth[docid]):
+        c.extend(buckets[b][h])
+    c = set(c)
+    print("\nComparing with docs")
+    print(c)
+
+    # Similar documents
+    sim_list = []
+    for doc in c:
+        if doc == docid:
+            continue
+        sim = jacsim(docid, doc, docsAsShingleSets,sign_matrix)
+        sim_list.append((sim, doc))
+    sim_list.sort(reverse=True)
+    return sim_list
+
+"""
 def euclidean_distance(x, y, r=2.0):
     '''
     Euclidean distance
@@ -286,41 +319,6 @@ def get_similarcos(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
     sim_list.sort()
     return sim_list
 
-def get_similar(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
-    '''
-    #Parameters: dn (The query document number)
-    #            docIdList (List of doc ids)
-    #            buckets (List of buckets)
-    #            docth (doc to hash list)
-    #            docAsShingleSets
-    #            Signature Matrix   
-    # This function finds similar documents given a query document after hashing and bucketing the query document
-    # It also evaluates based on various similarity criterion, namely, Jacard similarity, Euclidean distance
-    # and cosine similarity
-    # It returns a list of similar documents based on decreasing similarity amount
-    '''
-    if dn not in docIdList:
-        raise KeyError('No document with the given name found in the corpus.')
-
-    docid = dn
-    # Collection of documents similar to docid
-    c = []
-    # taking union of all buckets in which docid is present
-    for b, h in enumerate(docth[docid]):
-        c.extend(buckets[b][h])
-    c = set(c)
-    print(c)
-
-    # Similar documents
-    sim_list = []
-    for doc in c:
-        if doc == docid:
-            continue
-        sim = jacsim(docid, doc, docsAsShingleSets,sign_matrix)
-        sim_list.append((sim, doc))
-    sim_list.sort(reverse=True)
-    return sim_list
-
 def get_similareucdis(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
     '''Similarity For Euclidean Distance'''
     if dn not in docIdList:
@@ -344,6 +342,7 @@ def get_similareucdis(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
         sim_list.append((sim, doc))
     sim_list.sort()
     return sim_list
+"""
 #call the required functions
 
 #parsing_data()
@@ -357,16 +356,18 @@ sign_matrix = find_sign_matrix(matrix,len(allShingles))
 BANDS=20
 docth,buckets = lsh(BANDS,docIDlist,sign_matrix)
 
-print(docIDlist)
+# print(docIDlist)
 # inputDocID = input("enter the doc ID you want to know similarities of : ")
 # inputQuery = input("Enter query string:")
 
-inputDocID="1680"
+query_id = len(docAsShingleSets)-1
+inputDocID=query_id
 
 #Using Jaccard Similarity
 sim_docs = get_similar(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
 
 print("Calculating Jaccard similarities....\n")
+
 
 found = 0
 for sim, doc in sim_docs:
@@ -375,7 +376,8 @@ for sim, doc in sim_docs:
         print('Document Name: ' + str(doc), 'Similarity: ' + str(sim) + '\n')
 if found == 0:
     print("NO similar docs for the given threshold")
-    
+
+"""    
 sim_docs1 = get_similarcos(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
 
 print("Calculating Cosine similarities....\n")
@@ -400,5 +402,4 @@ for sim, doc in sim_docs2:
         print('Document Name: ' + str(doc), 'Similarity: ' + str(sim) + '\n')
 if found == 0:
     print("NO similar docs for the given threshold")   
-
-
+"""
