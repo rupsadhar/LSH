@@ -1,0 +1,411 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>main module &mdash; Locality Sensetive Hashing  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="LSH" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Locality Sensetive Hashing
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">LSH</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">main module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Locality Sensetive Hashing</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="modules.html">LSH</a> &raquo;</li>
+        
+      <li>main module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/main.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-main">
+<span id="main-module"></span><h1>main module<a class="headerlink" href="#module-main" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="main.parsing_data">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">parsing_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputQuery</span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.parsing_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses data form txt file and converts it to a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>doc_list: list of documents list from the dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.build_kmers">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">build_kmers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sequence</span></em>, <em class="sig-param"><span class="n">ksize</span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.build_kmers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds k-shingles for each sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sequence</strong> – sequence of DNA per document</p></li>
+<li><p><strong>ksize</strong> – Size of shingles</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of shingles of size k from each document</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.shingle">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">shingle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputQuery</span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.shingle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to shingles documnets and find posting lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputQuery</strong> – The query input from the user</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Document-wise Shingles, All unique shingles from corpus, The Posting Lists per shingle</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dictionary, set, Dictionary of sets</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.matrixGenerator">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">matrixGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">allShingles</span></em>, <em class="sig-param"><span class="n">invertedIndexTable</span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.matrixGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function indexes the shingles and returns a boolean matrix of shingle versus document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>allShingles</strong> – list of all shingles in the corpus</p></li>
+<li><p><strong>invertedIndexTable</strong> – dictionary with posting list for each shingle</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Matrix</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2D Array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.pickRandomCoeffs">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">pickRandomCoeffs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">maxval</span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.pickRandomCoeffs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns k number of unique random values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> – Number of random values</p></li>
+<li><p><strong>maxval</strong> – maximum value for randint</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of random integers</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.find_sign_matrix">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">find_sign_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">matrix</span></em>, <em class="sig-param"><span class="n">numOfShingles</span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.find_sign_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function picks two random coefficient values and genrates a hashfunction of form h(x)=(ax+b)%c
+All values are initialised to infinities and each row is mapped to lowest hash function that has a
+boolean true for that shingle. This new matrix called sigmatrix is returned.
+example
+matrix= 
+[[1, 0, 0, 1],
+[0, 0, 1, 0],
+[0, 1, 0, 1],
+[1, 0, 1, 1],
+[0, 0, 1, 0]]</p>
+<p>coeffA = [1,1]
+coeffB = [1,3]
+c = 5
+required output is [[1, 3, 0, 1], [0, 2, 0, 0]].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>matrix</strong> – boolean matrix of shingles vs docs</p></li>
+<li><p><strong>numOfShingles</strong> – total number of shingles in corpus</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The signature matrix based on the hash values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.getbestb">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">getbestb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">threshold</span></em>, <em class="sig-param"><span class="n">NUM_HASH_FUNCS</span></em>, <em class="sig-param"><span class="n">eps</span><span class="o">=</span><span class="default_value">1.0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.getbestb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the best value for no. of bands.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>threshold</strong> – difined threshold</p></li>
+<li><p><strong>NUM_HASH_FUNCS</strong> – number of hash functions</p></li>
+<li><p><strong>eps</strong> – Constant value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The best value for b by solving an equation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.lsh">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">lsh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">B_BANDS</span></em>, <em class="sig-param"><span class="n">docIdList</span></em>, <em class="sig-param"><span class="n">sig</span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.lsh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the LSH algorithm. This function first divides the signature matrix into bands and hashes each column onto buckets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>B_BANDS</strong> – Number of bands in signature matrix</p></li>
+<li><p><strong>docIdList</strong> – List of document ids</p></li>
+<li><p><strong>sig</strong> – signature matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of document to its hash along with the buckets</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.jacsim">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">jacsim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">doc1</span></em>, <em class="sig-param"><span class="n">doc2</span></em>, <em class="sig-param"><span class="n">docsAsShingleSets</span></em>, <em class="sig-param"><span class="n">sign_matrix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.jacsim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Jaccard Similarity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc1</strong> – First doc to be compared</p></li>
+<li><p><strong>doc2</strong> – Second doc to be comapred</p></li>
+<li><p><strong>docsAsShingleSets</strong> – Document wise shingles</p></li>
+<li><p><strong>sign_matrix</strong> – The Signature matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The jaccard similarity value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.get_similar">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">get_similar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dn</span></em>, <em class="sig-param"><span class="n">docIdList</span></em>, <em class="sig-param"><span class="n">buckets</span></em>, <em class="sig-param"><span class="n">docth</span></em>, <em class="sig-param"><span class="n">docsAsShingleSets</span></em>, <em class="sig-param"><span class="n">sign_matrix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.get_similar" title="Permalink to this definition">¶</a></dt>
+<dd><p>” This function finds similar documents given a query document after hashing and bucketing the query document
+It also evaluates based on various similarity criterion, namely, Jacard similarity, Euclidean distance
+and cosine similarity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dn</strong> – The query document number</p></li>
+<li><p><strong>docIdList</strong> – List of doc ids</p></li>
+<li><p><strong>buckets</strong> – List of buckets</p></li>
+<li><p><strong>docth</strong> – doc to hash list</p></li>
+<li><p><strong>docAsShingleSets</strong> – Document wise shingles</p></li>
+<li><p><strong>sign_matrix</strong> – The Signature matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of similar documents based on decreasing similarity amount</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="main.main">
+<code class="sig-prename descclassname">main.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main Function.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="modules.html" class="btn btn-neutral float-left" title="LSH" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Rupsa Dhar, Keshav Kabra, Meganaa Reddy
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
