@@ -16,6 +16,8 @@ MEGANAA REDDY 2017B3A70973H
 
 Our objective is to recommend the user with the similar sequences of DNA bases, from the corpus of DNA dataset with a threshold similarity given by the user. We exploit the concept of LSH , to find the documents which are closer to the query and display them to the user for various distance measures.
 
+LSH refers to a family of functions to hash data points into buckets so that data points near each other are located in the same buckets with high probability, while data points far from each other are likely to be in different buckets. This makes it easier to identify observations with various degrees of similarity.
+
 ### **Data Structures Used**
 
 shinglesInDocWords = set()#set to store unique hashed shingles of a doc,to avoid repetition
@@ -34,10 +36,6 @@ matrix #boolean matrix with list\_of\_unique\_shingles as rows documents as colu
 
 sigmatrix #signature matrix with no\_of\_rows=no\_of\_hash\_functions and no\_of\_columns=no\_of\_documents
 
-### **Functions Used**
-1.**parsing_data(inputQuery)**
-Parses data form txt file and converts it to a list.
-:return: doc_list: list of documents list from the dataset
 
 ### **Runtime for Different Distance Measures**
 
