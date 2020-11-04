@@ -5,11 +5,13 @@ import numpy as np
 import sympy as sympy
 import random as random
 import math
+import time
 data_list=[]
 INF = 2**32
-NUM_HASH_FUNCS=100
+number_of_hash=100
 threshold = 0.6
-B_ROWS = 5
+rows_of_B = 5
+shingle_size = 7
 docAsShingleSets={}
 
 def parsing_data(inputQuery):
@@ -55,12 +57,12 @@ def shingle(inputQuery):
     cnt=0
     shinglesInDocWords = set()
     PostingDict = {}
-    print("Shingling the documents ")
+    print("\n Shingling the documents ")
     for i in sequences:
 
        
         docIDlist.add(cnt+1)
-        shingle_list=build_kmers(i,5)
+        shingle_list=build_kmers(i,shingle_size)
 
         # docAsShingleSets[cnt]=shingle_list
         templist=[]
@@ -101,22 +103,22 @@ def matrixGenerator(allShingles, invertedIndexTable):
     :return: Matrix 
     :rtype: 2D Array
     """
-    postlist=[]
-    index_matrix = {}
+    posting_list_1=[]
+    matrix_with_index = {}
     index = 0
     # indexing the shingles
-    print("Generating Boolean Matrix\n")
+    print("\n Generating Boolean Matrix\n")
     for shingle in allShingles:
-        index_matrix[shingle] = index
+        matrix_with_index[shingle] = index
         index += 1
 
     # shingle document matrix
     check=0
     matrix = np.zeros([len(allShingles), 1681], dtype=int)
     for shingle in allShingles:
-        postlist = invertedIndexTable[shingle]
-        for d in postlist:
-            matrix[index_matrix[shingle]][int(d)] = 1  # Boolean value true for that document corresponding to a shingle
+        posting_list_1 = invertedIndexTable[shingle]
+        for d in posting_list_1:
+            matrix[matrix_with_index[shingle]][int(d)] = 1  # Boolean value true for that document corresponding to a shingle
             check+=1
     return matrix
 
@@ -128,21 +130,20 @@ def pickRandomCoeffs(k, maxval):
     :return: A list of random integers
     '''
   # Create a list of 'k' random values.
-    randList = []
+    rand_no_list = []
 
     while k > 0:
     # Get a random shingle ID.
         randIndex = random.randint(0, maxval)
 
     # Ensure that each random number is unique.
-        while randIndex in randList:
+        while randIndex in rand_no_list:
             randIndex = random.randint(0, maxval)
 
-    # Add the random number to the list.
-        randList.append(randIndex)
+        rand_no_list.append(randIndex)
         k = k - 1
 
-    return randList
+    return rand_no_list
 
 def find_sign_matrix(matrix, numOfShingles):
     """ This function picks two random coefficient values and genrates a hashfunction of form h(x)=(ax+b)%c
@@ -165,47 +166,47 @@ def find_sign_matrix(matrix, numOfShingles):
     :param numOfShingles: total number of shingles in corpus
     :return: The signature matrix based on the hash values
     """
-    print("Generating signature Matrix\n")
+    print("\n Generating signature Matrix")
     c = numOfShingles
     while not sympy.isprime(c):
         c += 1
 
-    coeffA = pickRandomCoeffs(NUM_HASH_FUNCS, numOfShingles-1)
-    coeffB = pickRandomCoeffs(NUM_HASH_FUNCS, numOfShingles-1)
+    coefficient_1 = pickRandomCoeffs(number_of_hash, numOfShingles-1)
+    coefficient_2 = pickRandomCoeffs(number_of_hash, numOfShingles-1)
 
-    rows, cols, sigrows = len(matrix), len(matrix[0]), len(coeffA)
+    rows, cols, sigrows = len(matrix), len(matrix[0]), len(coefficient_1)
     # initialize signature matrix with maxint
-    sigmatrix = np.full((sigrows, cols), INF)
+    signature_Mat = np.full((sigrows, cols), INF)
     
 
     for r in range(rows):
         hashvalue = []
         for h in range(sigrows):
-            hashvalue.append((coeffA[h] + coeffB[h]*r) % c)# Hash each row
+            hashvalue.append((coefficient_1[h] + coefficient_2[h]*r) % c)# Hash each row
         # if data != 0 and signature > hash value, replace signature with hash value
         for col in range(cols):
             if matrix[r][col] == 0:
                 continue
             for i in range(sigrows):
-                if sigmatrix[i, col] > hashvalue[i]:
-                    sigmatrix[i, col] = hashvalue[i]
-    print("Signature matrix\n")
-    print(sigmatrix)
-    return sigmatrix
+                if signature_Mat[i, col] > hashvalue[i]:
+                    signature_Mat[i, col] = hashvalue[i]
+    print("Signature matrix")
+    print(signature_Mat)
+    return signature_Mat
 
-def getbestb(threshold,NUM_HASH_FUNCS, eps=1e0):
+def getbestb(threshold,number_of_hash, eps=1e0):
     """ Calculates the best value for no. of bands.
 
     :param threshold: difined threshold
-    :param NUM_HASH_FUNCS: number of hash functions
+    :param number_of_hash: number of hash functions
     :param eps: Constant value
     :return: The best value for b by solving an equation
     """
-    for b in range(1, NUM_HASH_FUNCS+1):
+    for b in range(1, number_of_hash+1):
         opt = b*math.log10(b)
-        val = -1 * NUM_HASH_FUNCS * math.log10(threshold)
+        val = -1 * number_of_hash * math.log10(threshold)
         if opt > val-eps and opt < val+eps:
-            print("Using number of bands : %d" % (np.round(b)))
+            print("\n Processing LSH with number of bands : %d" % (np.round(b)))
             return np.round(b)
 
 
@@ -217,19 +218,19 @@ def lsh(B_BANDS, docIdList, sig):
     :param sig: signature matrix
     :return: List of document to its hash along with the buckets
     """
-    n = NUM_HASH_FUNCS
-    b = getbestb(threshold,NUM_HASH_FUNCS)
-    r = n / b
+    numHash = number_of_hash
+    bands = getbestb(threshold,number_of_hash)
+    rows = numHash / bands
 
     d = 1681
     # Array of dictionaries, each dictionary is for each band which will hold buckets for hashed vectors in that band
-    buckets = np.full(b, {})
+    buckets = np.full(bands, {})
     # Mapping from docid to h to find the buckets in which document with docid was hashed
-    docth = np.zeros((d, b), dtype=int)  # doc to hash
-    for i in range(b):
+    docth = np.zeros((d, bands), dtype=int)  # doc to hash
+    for i in range(bands):
         for j in range(d):
-            low = int(i*r) # First row in a band
-            high = min(int((i+1)*r), n)# Last row in current band
+            low = int(i*rows) # First row in a band
+            high = min(int((i+1)*rows), numHash)# Last row in current band
             l = []
             for x in range(low, high):
                 l.append(sig[x, j])  # Append each row into l
@@ -250,10 +251,10 @@ def jacsim(doc1, doc2, docsAsShingleSets,sign_matrix):
     :param sign_matrix: The Signature matrix
     :return: The jaccard similarity value
     """
-    doc1 = sign_matrix[:,doc1]
-    doc2 = sign_matrix[:,doc2]
-    intersection = sum(bool(x) for x in np.logical_and(doc1, doc2))
-    return (intersection / len(doc1))
+    document1 = sign_matrix[:,doc1]
+    document2 = sign_matrix[:,doc2]
+    intersect = sum(bool(x) for x in np.logical_and(document1, document2))
+    return (intersect / len(document1))
 
 def get_similar(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
     """" This function finds similar documents given a query document after hashing and bucketing the query document
@@ -273,17 +274,17 @@ def get_similar(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
 
     docid = dn
     # Collection of documents similar to docid
-    c = []
+    coooo = []
     # taking union of all buckets in which docid is present
     for b, h in enumerate(docth[docid]):
-        c.extend(buckets[b][h])
-    c = set(c)
+        coooo.extend(buckets[b][h])
+    coooo = set(coooo)
     print("\nComparing with docs")
-    print(c)
+    print(coooo)
 
     # Similar documents
     sim_list = []
-    for doc in c:
+    for doc in coooo:
         if doc == docid:
             continue
         sim = jacsim(docid, doc, docsAsShingleSets,sign_matrix)
@@ -291,109 +292,36 @@ def get_similar(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
     sim_list.sort(reverse=True)
     return sim_list
 
-"""
-def euclidean_distance(x, y, r=2.0):
-    '''
-    Euclidean distance
-    '''
-    A = np.linalg.norm(x)
-    B = np.linalg.norm(y)
-    x = np.divide(x, A)
-    y = np.divide(y, B)
-    try:
-         return np.power(np.sum(np.power(np.subtract(x, y), r)), 1.0/r)
-    except (ValueError,ZeroDivisionError):
-         print('Please, enter only even values for "r > 0".')
-    except IndexError:
-         print('Please, the sets must have the same size.')
-
-def cosine_distance(x,y):
-    '''
-    Cosine Distance
-    '''
-    prodAB = np.dot(x,y)
-    #zeros = np.zeros(len(x))
-    A = np.linalg.norm(x)
-    B = np.linalg.norm(y)
-    return prodAB / (A*B)
-
-
-def get_similarcos(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
-    '''
-    Similarity for cosine distance
-    '''
-    if dn not in docIdList:
-        raise KeyError('No document with the given name found in the corpus.')
-
-    docid = dn
-    # Collection of documents similar to docid
-    c = []
-    # taking union of all buckets in which docid is present
-    for b, h in enumerate(docth[docid]):
-        c.extend(buckets[b][h])
-    c = set(c)
-    print(c)
-
-    # Similar documents
-    sim_list = []
-    for doc in c:
-        if doc == docid:
-            continue
-        sim = cosine_distance(sign_matrix[:,dn],
-                              sign_matrix[:,doc])
-        sim_list.append((sim, doc))
-    sim_list.sort()
-    return sim_list
-
-def get_similareucdis(dn,docIdList,buckets,docth,docsAsShingleSets,sign_matrix):
-    '''Similarity For Euclidean Distance'''
-    if dn not in docIdList:
-        raise KeyError('No document with the given name found in the corpus.')
-
-    docid = dn
-    # Collection of documents similar to docid
-    c = []
-    # taking union of all buckets in which docid is present
-    for b, h in enumerate(docth[docid]):
-        c.extend(buckets[b][h])
-    c = set(c)
-    print(c)
-
-    # Similar documents
-    sim_list = []
-    for doc in c:
-        if doc == docid:
-            continue
-        sim = euclidean_distance(sign_matrix[:,dn],sign_matrix[:,doc])
-        sim_list.append((sim, doc))
-    sim_list.sort()
-    return sim_list
-"""
-#call the required functions
 
 def main():
     """ Main Function.
-    
     """
-    #parsing_data()
     inputQuery = input("Enter query string:")
-
+    tic = time.time()
     docsAsShingleSets, allShingles, PostingDict, docIDlist = shingle(inputQuery)
-    #print(PostingDict)
+    toc = time.time()
+    print("Time taken = ", toc-tic)
+
+    tic = time.time()
     matrix = matrixGenerator(allShingles,PostingDict)
     print(matrix)
+    toc = time.time()
+    print("Time taken = ", toc-tic)
+
+    tic = time.time()
     sign_matrix = find_sign_matrix(matrix,len(allShingles))
+    toc = time.time()
+    print("Time taken = ", toc-tic)
+
+    tic = time.time()
     BANDS=20
     docth,buckets = lsh(BANDS,docIDlist,sign_matrix)
-
-    # print(docIDlist)
-    # inputDocID = input("enter the doc ID you want to know similarities of : ")
-    # inputQuery = input("Enter query string:")
+    toc = time.time()
+    print("Time taken = ", toc-tic)
 
     query_id = len(docAsShingleSets)-1
     inputDocID=query_id
 
-    #Using Jaccard Similarity
     sim_docs = get_similar(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
 
     print("Calculating Jaccard similarities....\n")
@@ -406,33 +334,6 @@ def main():
             print('Document Name: ' + str(doc), 'Similarity: ' + str(sim) + '\n')
     if found == 0:
         print("NO similar docs for the given threshold")
-
-    """    
-    sim_docs1 = get_similarcos(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
-
-    print("Calculating Cosine similarities....\n")
-
-    found = 0
-    for sim, doc in sim_docs1:
-        if sim >= threshold:
-            found = 1
-            print('Document Name: ' + str(doc), 'Similarity: ' + str(sim) + '\n')
-    if found == 0:
-        print("NO similar docs for the given threshold")
-
-    sim_docs2 = get_similareucdis(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
-        
-    print("Calculating Euclidean Distance....\n")
-
-    found = 0
-    t = np.sqrt(2 - 2*threshold)
-    for sim, doc in sim_docs2:
-        if sim < t:
-            found = 1
-            print('Document Name: ' + str(doc), 'Similarity: ' + str(sim) + '\n')
-    if found == 0:
-        print("NO similar docs for the given threshold")   
-    """
 
 if __name__ == "__main__":
     main()
