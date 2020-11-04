@@ -36,7 +36,9 @@ matrix #boolean matrix with list\_of\_unique\_shingles as rows documents as colu
 
 sigmatrix #signature matrix with no\_of\_rows=no\_of\_hash\_functions and no\_of\_columns=no\_of\_documents
 
-
+### **Similarity Measure Used**
+ **Jaccard coefficient measure** - It is a number between 0 and 1. It is defined as the number of elements in the intersection of two sets A and B divided by the number of elements in their union. The higher the coefficient, more is the similarity. (Lesser distance)
+ 
 ### **Runtime for Different Distance Measures**
 
 Number of Documents = 1680, Number of Hash Functions = 100 , Shingles - 4 shingles
@@ -47,11 +49,6 @@ Optimized number of bands - 30
 
 Jaccard - 0.2393sec
 
-Cosine -0.2094sec
+Total Runtime - 0.8393 sec
 
-Euclidean -0.0069sec
 
-Total Runtime - 0.8sec
-
-### **Similarity Measure Used**
- **Jaccard coefficient measure** - It is a number between 0 and 1. It is defined as the number of elements in the intersection of two sets A and B divided by the number of elements in their union. The higher the coefficient, more is the similarity. (Lesser distance)
