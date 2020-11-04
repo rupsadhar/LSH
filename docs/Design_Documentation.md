@@ -34,6 +34,11 @@ matrix #boolean matrix with list\_of\_unique\_shingles as rows documents as colu
 
 sigmatrix #signature matrix with no\_of\_rows=no\_of\_hash\_functions and no\_of\_columns=no\_of\_documents
 
+### **Functions Used**
+1.**parsing_data(inputQuery)**
+Parses data form txt file and converts it to a list.
+:return: doc_list: list of documents list from the dataset
+
 ### **Runtime for Different Distance Measures**
 
 Number of Documents = 1680, Number of Hash Functions = 100 , Shingles - 4 shingles
