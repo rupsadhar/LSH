@@ -41,11 +41,9 @@ sigmatrix #signature matrix with no\_of\_rows=no\_of\_hash\_functions and no\_of
  
 ### **Runtime for Different Distance Measures**
 
-Number of Documents = 1680, Number of Hash Functions = 100 , Shingles - 4 shingles
+Number of Documents = 1680, Number of Hash Functions = 100 , Shingles - 7 shingles
 
 Threshold - 0.6
-
-Optimized number of bands - 30
 
 Jaccard - 0.2393sec
 
