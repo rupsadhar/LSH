@@ -50,8 +50,5 @@ Euclidean -0.0069sec
 
 Total Runtime - 0.8sec
 
-### **Distances Used**
-
-1. **Euclidean distance-** A simple vector space euclidean distance is used here.
-2. **Cosine distance** - Useful to remove the effects of size of document in determining the similarity level. The lower the angle between query and doc or higher the cosine coefficient between the vectors implies ,higher is the similarity between them.
-3. **Jaccard coefficient measure** - It is a number between 0 and 1. It is defined as the number of elements in the intersection of two sets A and B divided by the number of elements in their union. The higher the coefficient, more is the similarity. (Lesser distance)
+### **Similarity Measure Used**
+ **Jaccard coefficient measure** - It is a number between 0 and 1. It is defined as the number of elements in the intersection of two sets A and B divided by the number of elements in their union. The higher the coefficient, more is the similarity. (Lesser distance)
