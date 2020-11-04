@@ -16,6 +16,8 @@ MEGANAA REDDY 2017B3A70973H
 
 Our objective is to recommend the user with the similar sequences of DNA bases, from the corpus of DNA dataset with a threshold similarity given by the user. We exploit the concept of LSH , to find the documents which are closer to the query and display them to the user for various distance measures.
 
+LSH refers to a family of functions to hash data points into buckets so that data points near each other are located in the same buckets with high probability, while data points far from each other are likely to be in different buckets. This makes it easier to identify observations with various degrees of similarity.
+
 ### **Data Structures Used**
 
 shinglesInDocWords = set()#set to store unique hashed shingles of a doc,to avoid repetition
@@ -34,11 +36,6 @@ matrix #boolean matrix with list\_of\_unique\_shingles as rows documents as colu
 
 sigmatrix #signature matrix with no\_of\_rows=no\_of\_hash\_functions and no\_of\_columns=no\_of\_documents
 
-### **Functions Used**
-1.**parsing_data(inputQuery)**
-Parses data form txt file and converts it to a list.
-:return: doc_list: list of documents list from the dataset
-
 ### Note
 * Number of Documents = 1680
 * Number of Hash Functions = 100 
@@ -51,7 +48,6 @@ Parses data form txt file and converts it to a list.
 * Generating Signature matrix = 113.13688 s
 * LSH = 0.18276 s
 * Jaccard Similarity =  0.000587 s
-
 
 ### **Similarity Measure Used**
  **Jaccard coefficient measure** - It is a number between 0 and 1. It is defined as the number of elements in the intersection of two sets A and B divided by the number of elements in their union. The higher the coefficient, more is the similarity. (Lesser distance)
