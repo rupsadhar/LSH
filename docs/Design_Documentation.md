@@ -39,21 +39,19 @@ sigmatrix #signature matrix with no\_of\_rows=no\_of\_hash\_functions and no\_of
 Parses data form txt file and converts it to a list.
 :return: doc_list: list of documents list from the dataset
 
+### Note
+* Number of Documents = 1680
+* Number of Hash Functions = 100 
+* Shingle size = 7
+* Threshold = 0.6
+* Optimized number of bands = 18
+
 ### **Runtime for Different Distance Measures**
+* Shingling =  60.93597 s
+* Generating Signature matrix = 113.13688 s
+* LSH = 0.18276 s
+* Jaccard Similarity =  0.000587 s
 
-Number of Documents = 1680, Number of Hash Functions = 100 , Shingles - 4 shingles
-
-Threshold - 0.6
-
-Optimized number of bands - 30
-
-Jaccard - 0.2393sec
-
-Cosine -0.2094sec
-
-Euclidean -0.0069sec
-
-Total Runtime - 0.8sec
 
 ### **Similarity Measure Used**
  **Jaccard coefficient measure** - It is a number between 0 and 1. It is defined as the number of elements in the intersection of two sets A and B divided by the number of elements in their union. The higher the coefficient, more is the similarity. (Lesser distance)

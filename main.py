@@ -322,9 +322,10 @@ def main():
     query_id = len(docAsShingleSets)-1
     inputDocID=query_id
 
+    tic = time.time()
     sim_docs = get_similar(int(inputDocID),docIDlist,buckets,docth,docsAsShingleSets,sign_matrix)
 
-    print("Calculating Jaccard similarities....\n")
+    print("\n Calculating Jaccard similarities....\n")
 
 
     found = 0
@@ -334,6 +335,9 @@ def main():
             print('Document Name: ' + str(doc), 'Similarity: ' + str(sim) + '\n')
     if found == 0:
         print("NO similar docs for the given threshold")
+    
+    toc = time.time()
+    print("Time taken = ", toc-tic)
 
 if __name__ == "__main__":
     main()
